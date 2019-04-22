@@ -3,21 +3,27 @@
         <div class="container products">
             <div class="products__title">
                 <h1>results</h1>
+                <button @click="hideItems">hide sold items</button>
             </div>
             <div class="products__content">
-                <div class="product" v-for="product in products" :key="product.id">
-                    <div class="product__img" :style="{ backgroundImage: 'url(' + product.img + ')' }"></div>
-                    <div class="product__likes">
-                        <button @click="like(product.title)"></button>
-                    </div>
-                    <div class="product__desc desc"> 
-                        <div class="desc__title">
-                            <h3>{{product.title}}</h3>
-                            <span>{{product.brand}}</span>
+                <div v-for="product in products" :key="product.id" >
+                    <div class="product" :class="{'sold': product.sold}">
+                        <div class="sold__content" v-if="product.sold === true">
+                            <h4>sold</h4>
                         </div>
-                        <div class="desc__sum">
-                            <span>size: {{product.size}}</span>
-                            <span class="desc__sum--price">{{product.price}} £</span>
+                        <div class="product__img" :style="{ backgroundImage: 'url(' + product.img + ')' }"></div>
+                        <div class="product__likes">
+                            <button @click="like(product.title)"></button>
+                        </div>
+                        <div class="product__desc desc"> 
+                            <div class="desc__title">
+                                <h3>{{product.title}}</h3>
+                                <span>{{product.brand}}</span>
+                            </div>
+                            <div class="desc__sum">
+                                <span>size: {{product.size}}</span>
+                                <span class="desc__sum--price">{{product.price}} £</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -27,20 +33,37 @@
 </template>
 
 <script>
-export default {
+import { bus } from '../main';
+
+export default { 
     name: 'Products',
-    props: ['products'],
+    props: {
+        products: {
+            type: Array
+        },
+    },
+
     data() {
         return {
-            liked: []
+            liked: [],
+            counter: 1
         }
     },
+
     methods: {
         like(a) {
             event.target.parentNode.parentNode.classList.add('is-active')
             this.liked.push(a)
 
-            console.log(this.liked)
+            bus.$emit('likedProduct', this.liked);
+            bus.$emit('counter', this.counter)
+
+            this.counter +=1
+
+        },
+
+        hideItems() {
+            // document.getElementsByClassName('sold').classList.add('hide')
         }
     }
 }
@@ -57,10 +80,33 @@ export default {
 .products {
 
     &__title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
         h1 {
             text-transform: uppercase;
             font-weight: 900;
             font-size: 26px; 
+        }
+
+        button {
+            background: transparent;
+            height: 40px;
+            color: $blue;
+            border: 1px solid $blue;
+            text-transform: uppercase;
+            font-weight: bold;
+            border-radius: 5px;
+            color: $blue;
+            padding: 0 15px;
+            transition: .3s;
+
+            &:hover {
+                background: $blue;
+                color: white;
+                cursor: pointer;
+            }
         }
     }
     
@@ -169,6 +215,38 @@ export default {
         &--price {
             font-size: 24px;
             font-weight: 600;
+        }
+    }
+}
+
+.sold {
+
+    &__content {
+        &:after {
+            content: '';
+            background: rgba(1,1,1, .5);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+            z-index: 0;
+            top: 0;
+        }
+
+        position: absolute;
+        width: 100%;
+        height: 150px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        h4 {
+            color: white;
+            z-index: 111;
+            text-transform: uppercase;
+            border: 1px solid #ddd;
+            padding: 10px;
         }
     }
 }

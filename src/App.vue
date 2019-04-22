@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <Header />
-    <Products :products="products"/>
+    <Header/>
+    <Products :products="products" />
   </div>
 </template>
 
@@ -18,7 +18,7 @@ export default {
 
   data() {
     return {
-      products: []
+      products: [],
     }
   },
 
@@ -28,7 +28,7 @@ export default {
         .then((data) => {
         this.products = data;
 
-        console.log(this.products)
+        // console.log(this.products)
     });
   },
 };
