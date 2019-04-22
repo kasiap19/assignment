@@ -8,7 +8,7 @@
                 <div class="product" v-for="product in products" :key="product.id">
                     <div class="product__img" :style="{ backgroundImage: 'url(' + product.img + ')' }"></div>
                     <div class="product__likes">
-                        <button></button>
+                        <button @click="like(product.title)"></button>
                     </div>
                     <div class="product__desc desc"> 
                         <div class="desc__title">
@@ -29,7 +29,20 @@
 <script>
 export default {
     name: 'Products',
-    props: ['products']
+    props: ['products'],
+    data() {
+        return {
+            liked: []
+        }
+    },
+    methods: {
+        like(a) {
+            event.target.parentNode.parentNode.classList.add('is-active')
+            this.liked.push(a)
+
+            console.log(this.liked)
+        }
+    }
 }
 </script>
 
@@ -71,6 +84,17 @@ export default {
     position: relative;
     background: white;
 
+    &.is-active {
+        button {
+            &:before {
+                color: white;
+            }
+            
+            background: darkred;
+            border: 1px solid darkred;
+        }
+    }
+
     &__img {
         height: 150px;
         background-size: cover;
@@ -97,9 +121,24 @@ export default {
                 transition: 0;
             }
 
+            &:focus {
+                outline: 0;
+            }
+
             border-radius: 5px;
             padding: 7px;
             background: white;
+
+            &:hover {
+                background: darkred;
+                border: 1px solid darkred;
+                transition: .3s;
+                cursor: pointer;
+
+                &:before {
+                    color: white;
+                }
+            }
         }
     }
 }
