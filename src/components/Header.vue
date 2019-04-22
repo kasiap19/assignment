@@ -2,12 +2,12 @@
     <div class="container">
         {{products}}
         <div class="header">
-            <div class="header__likes">
+            <div class="header__likes" @click="showLiked">
                 <span>{{this.counts}}</span>
             </div>
 
-            <div class="header__list">
-                <ul>
+            <div class="header__list" >
+                <ul v-if="active">
                     <li v-for="(like, index) in likes">
                         <span> {{like}}</span>
                         <button @click="remove(index)">X</button>
@@ -29,6 +29,7 @@ export default {
 
     data() {
         return {
+            active: false,
             likes: [],
             counts: 0
         }
@@ -37,18 +38,26 @@ export default {
     created() {
         bus.$on('likedProduct', (data) => {
             this.likes = data;
+
+            console.log(this.likes.length)
         });
 
         bus.$on('counter', (data) => {
-            this.counts = data
-            console.log(this.counts)
+            this.counts = data 
+            // console.log(this.counts)
         });
     },
 
     methods: {
         remove(index) {
             this.likes.splice(index, 1);
-        }
+            this.counts = this.likes.length
+
+            bus.$emit('removed', this.likes); 
+        },
+        showLiked() {
+            this.active = !this.active; 
+        },
     }
 }
 </script>
@@ -67,6 +76,7 @@ export default {
             z-index: 1;
             position: absolute;
             top: 30px;
+            right: 90px;
 
             ul {
                 list-style: none;
@@ -118,6 +128,7 @@ export default {
                 color: $blue;
                 font-weight: bold;
                 transition: 0;
+                pointer-events: none;
             }
 
             background: white;
@@ -127,12 +138,26 @@ export default {
             display: flex;
             align-items: center;
             padding: 0 10px;
+            pointer-events: visible;
+            transition: .3s;
+
+            &:hover {
+                &:before {
+                    color: white;
+                }
+
+                background: $blue;
+                color: white;
+                cursor: pointer;
+            }
 
             span {
                 padding: 0 10px;
                 text-align: center;
                 font-weight: bold;
+                pointer-events: none;
             }
+
         }
     }
 </style>

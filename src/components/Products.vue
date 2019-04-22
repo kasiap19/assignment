@@ -6,15 +6,18 @@
                 <button @click="hideItems">hide sold items</button>
             </div>
             <div class="products__content">
-                <div v-for="product in products" :key="product.id" >
-                    <div class="product" :class="{'sold': product.sold}">
+                <div v-for="product in products" :key="product.id" :class="{'sold': product.sold}">
+                    <div class="product" >
                         <div class="sold__content" v-if="product.sold === true">
                             <h4>sold</h4>
                         </div>
                         <div class="product__img" :style="{ backgroundImage: 'url(' + product.img + ')' }"></div>
+
+                        <!-- likes -->
                         <div class="product__likes">
                             <button @click="like(product.title)"></button>
                         </div>
+
                         <div class="product__desc desc"> 
                             <div class="desc__title">
                                 <h3>{{product.title}}</h3>
@@ -46,8 +49,17 @@ export default {
     data() {
         return {
             liked: [],
-            counter: 1
+            counter: 1,
+            removed: this.products
+            
         }
+    },
+
+    created() {
+        bus.$on('removed', (data) => {
+            this.removed = data;
+            console.log(this.removed)    
+        });
     },
 
     methods: {
@@ -63,8 +75,18 @@ export default {
         },
 
         hideItems() {
-            // document.getElementsByClassName('sold').classList.add('hide')
+            const items = document.getElementsByClassName('sold');
+
+            for(this.item of items){
+                this.item.classList.add('hide');
+            }
+
+            const clickedHide = document.getElementsByClassName('products');
+            for(this.item2 of clickedHide){
+                this.item2.classList.add('closeBtn');
+            }
         }
+        
     }
 }
 </script>
@@ -78,6 +100,14 @@ export default {
 }
 
 .products {
+
+    &.closeBtn {
+        .products__title {
+            button {
+                display: none;
+            }
+        }
+    }
 
     &__title {
         display: flex;
@@ -220,6 +250,10 @@ export default {
 }
 
 .sold {
+
+    &.hide {
+        display: none;
+    }
 
     &__content {
         &:after {
