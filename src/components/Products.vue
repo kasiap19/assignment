@@ -3,7 +3,8 @@
         <div class="container products">
             <div class="products__title">
                 <h1>results</h1>
-                <button @click="hideItems">hide sold items</button>
+                <button @click="hideItems" v-if="hideSold">hide sold items</button>
+                <button @click="all" v-if="showAll">show all</button>
             </div>
             <div class="products__content">
                 <div v-for="product in products" :key="product.id" :class="{'sold': product.sold}">
@@ -15,7 +16,8 @@
 
                         <!-- likes -->
                         <div class="product__likes">
-                            <button @click="like(product.title)"></button>
+                            <div v-for="i in liked" :class="{'colored': product.title === i}"></div>
+                            <div class="button" @click="like(product.title)" ></div>
                         </div>
 
                         <div class="product__desc desc"> 
@@ -29,7 +31,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> 
             </div>
         </div>
     </div>
@@ -50,21 +52,20 @@ export default {
         return {
             liked: [],
             counter: 1,
-            removed: this.products
-            
+            hideSold: true,
+            showAll: false
         }
     },
-
-    created() {
+    mounted() {
         bus.$on('removed', (data) => {
-            this.removed = data;
-            console.log(this.removed)    
+            this.liked = data;
+            console.log(this.liked)    
         });
     },
 
     methods: {
         like(a) {
-            event.target.parentNode.parentNode.classList.add('is-active')
+            // event.target.parentNode.parentNode.classList.add('is-active')
             this.liked.push(a)
 
             bus.$emit('likedProduct', this.liked);
@@ -72,27 +73,43 @@ export default {
 
             this.counter +=1
 
+            // console.log(this.liked)
+
         },
 
         hideItems() {
             const items = document.getElementsByClassName('sold');
 
             for(this.item of items){
-                this.item.classList.add('hide');
+                this.item.classList.add('fade');
             }
 
-            const clickedHide = document.getElementsByClassName('products');
-            for(this.item2 of clickedHide){
-                this.item2.classList.add('closeBtn');
+            this.hideSold = false;
+            this.showAll = true;
+        },
+
+        all() {
+            const items = document.getElementsByClassName('sold');
+
+            for(this.item of items){
+                this.item.classList.remove('fade');
             }
+
+            this.hideSold = true;
+            this.showAll = false;
         }
-        
     }
 }
 </script>
 
 <style lang="scss">
 @import '../assets/_settings.scss';
+
+button {
+    &:focus {
+        outline: 0;
+    }
+}
 
 .products-component {
     background: #f1f2f6;
@@ -160,17 +177,6 @@ export default {
     position: relative;
     background: white;
 
-    &.is-active {
-        button {
-            &:before {
-                color: white;
-            }
-            
-            background: darkred;
-            border: 1px solid darkred;
-        }
-    }
-
     &__img {
         height: 150px;
         background-size: cover;
@@ -187,7 +193,7 @@ export default {
         top: 10px;
         right: 10px;
 
-        button {
+        .button {
             &:before {
                 content: '\f164';
                 font-family: "Font Awesome 5 Free";
@@ -207,7 +213,6 @@ export default {
 
             &:hover {
                 background: darkred;
-                border: 1px solid darkred;
                 transition: .3s;
                 cursor: pointer;
 
@@ -251,7 +256,7 @@ export default {
 
 .sold {
 
-    &.hide {
+    &.fade {
         display: none;
     }
 
@@ -283,6 +288,26 @@ export default {
             padding: 10px;
         }
     }
+}
+
+.colored {
+     &:before {
+        content: '\f164';
+        font-family: "Font Awesome 5 Free";
+        font-size: 15px;
+        color: white;
+        font-weight: bold;
+        transition: 0;
+    }
+
+    background: darkred;
+    border-radius: 5px;
+    position: absolute;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
 }
 
 </style>

@@ -38,8 +38,7 @@ export default {
     created() {
         bus.$on('likedProduct', (data) => {
             this.likes = data;
-
-            console.log(this.likes.length)
+            // console.log(this.likes.length)
         });
 
         bus.$on('counter', (data) => {
@@ -76,23 +75,31 @@ export default {
             z-index: 1;
             position: absolute;
             top: 30px;
-            right: 90px;
+            
+            @include lg {
+                right: 90px;
+            }
 
             ul {
                 list-style: none;
                 background: white;
-                // border: 1px solid $blue;
                 border-radius: 5px;
                 padding: 10px 0;
+
+
 
                 li {
                     padding: 0 5px 0 20px;
                     font-size: 12px;
-                    min-height: 30px;
+                    min-height: 50px;
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
                     font-weight: bold;
+
+                    @include lg {
+                        min-height: 30px;
+                    }
 
                     &:hover {
                         button {
